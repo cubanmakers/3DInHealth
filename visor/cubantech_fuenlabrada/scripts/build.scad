@@ -1,7 +1,12 @@
 
+// File system path to working copy of git respository
 repo_path = "../../..";
+// Part to render, one of "headmount" , "visor"
 part = "headmount";
+// Spacing to use between moving parts
 spacing = 0.1;
+// Head mount pin height
+pin_height = 10;
 
 module import_model(subpath="") {
     echo("Loading", str(repo_path, subpath));
@@ -32,14 +37,9 @@ module franklin_mechanism_pin() {
 }
 
 module franklin_mechanism_hole() {
-    rotate(-90, [1, 0, 0])  
-    translate([6, 85, -10])
-    intersection() {
-        union() {
-            translate([0, -90, 0]) cube([40, 10, 40], center=true);
-        }
-        visor_franklin_headmount();
-    }
+    offset(delta=spacing, chamfer=true)
+    projection(cut = false)
+    franklin_mechanism_pin();
 }
 
 module cubantech_headmount() {
