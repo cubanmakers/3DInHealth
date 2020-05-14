@@ -7,6 +7,8 @@ part = "headmount";
 spacing = 0.1;
 // Head mount pin height
 pin_height = 10;
+// Pin rotation angle
+pin_pitch = 155;
 
 module import_model(subpath="") {
     echo("Loading", str(repo_path, subpath));
@@ -38,6 +40,7 @@ module franklin_mechanism_pin() {
 }
 
 module franklin_mechanism_hole() {
+    rotate(pin_pitch, [0, 0, 1])
     linear_extrude(height=3 * pin_height)
     offset(delta=spacing, chamfer=true)
     projection(cut = false)
