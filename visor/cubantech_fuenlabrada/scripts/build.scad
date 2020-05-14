@@ -26,6 +26,7 @@ module visor_fuenlabrada() {
 }
 
 module franklin_mechanism_pin() {
+    resize(newsize=[0, 0, pin_height])
     rotate(-90, [1, 0, 0])  
     translate([6, 85, -10])
     intersection() {
@@ -37,6 +38,7 @@ module franklin_mechanism_pin() {
 }
 
 module franklin_mechanism_hole() {
+    linear_extrude(height=3 * pin_height)
     offset(delta=spacing, chamfer=true)
     projection(cut = false)
     franklin_mechanism_pin();
@@ -75,7 +77,15 @@ module cubantech_headmount() {
 }
 
 module cubantech_visor() {
-    visor_fuenlabrada();
+    difference() {
+        visor_fuenlabrada();
+        translate([162.8, 28.7 + 1.5 * pin_height, 7.5])
+        rotate(90, [1, 0, 0])
+        franklin_mechanism_hole();
+        translate([162.8, 191.2 + 1.5 * pin_height, 7.5])
+        rotate(90, [1, 0, 0])
+        franklin_mechanism_hole();
+    }
 }
 
 module cubantech_fuenlabrada() {
