@@ -8,7 +8,7 @@ spacing = 0.1;
 // Head mount pin height
 pin_height = 10;
 // Pin rotation angle
-pin_pitch = 155;
+pin_pitch = -155;
 
 module import_model(subpath="") {
     echo("Loading", str(repo_path, subpath));
