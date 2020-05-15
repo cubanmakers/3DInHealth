@@ -1,4 +1,8 @@
 
+// Output 3D printing files
 *.gcode
 
+// Temporary files 
+*.swp
+*.swo
 
