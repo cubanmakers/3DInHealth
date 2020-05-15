@@ -6,7 +6,7 @@ part = "headmount";
 // Spacing to use between moving parts
 spacing = 0.1;
 // Head mount pin height
-pin_height = 10;
+pin_height = 12;
 // Pin rotation angle
 pin_pitch = -155;
 
