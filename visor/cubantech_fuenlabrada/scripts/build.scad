@@ -1,12 +1,17 @@
 
+// Antiflow visor modified by Cuban.Tech group, based on
+//
+// - parts borrowed from INSST-certified model , see https://github.com/cubanmakers/3DInHealth/tree/master/visor/cvm_fuenlabrada
+// - modified to use the pin assembly mechanism crafted for Franklin's visor https://github.com/cubanmakers/3DInHealth/tree/master/visor/cubantech_franklin
+
 // File system path to working copy of git respository
 repo_path = "../../..";
 // Part to render, one of "headmount" , "visor"
 part = "headmount";
 // Spacing to use between moving parts
-spacing = 0.1;
+spacing = 0.2;
 // Head mount pin height
-pin_height = 12;
+pin_height = 11.5;
 // Pin rotation angle
 pin_pitch = -155;
 
