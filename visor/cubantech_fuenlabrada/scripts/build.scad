@@ -6,10 +6,12 @@
 
 // File system path to working copy of git respository
 repo_path = "../../..";
-// Part to render, one of "headmount" , "visor"
+// Part to render, one of "headmount" (default) , "visor"
 part = "headmount";
 // Spacing to use between moving parts
 spacing = 0.4;
+// Pin geometry one of "franklin", "nosupport" (default)
+pin = "nosupport";
 // Head mount pin height
 pin_height = 11.5;
 // Pin rotation angle
@@ -32,8 +34,8 @@ module visor_fuenlabrada() {
     import_model("/visor/cvm_fuenlabrada/files/PORTAPANTALLA.stl");
 }
 
-module franklin_mechanism_pin_from_model() {
-    resize(newsize=[0, 0, pin_height])
+module franklin_mechanism_pin() {
+    resize(newsize=[14, 12, pin_height])
     rotate(-90, [1, 0, 0])  
     translate([6, 85, -10])
     intersection() {
@@ -44,7 +46,7 @@ module franklin_mechanism_pin_from_model() {
     }
 }
 
-module franklin_mechanism_pin() {
+module cubantech_pin() {
     union() {
         hull() {
             translate([-3.75, 0, pin_height - 4.5])
@@ -59,12 +61,21 @@ module franklin_mechanism_pin() {
     }
 }
 
-module franklin_mechanism_hole() {
+module pin_hole() {
     rotate(pin_pitch, [0, 0, 1])
     linear_extrude(height=3 * pin_height)
     offset(delta=spacing, chamfer=true)
     projection(cut = false)
-    franklin_mechanism_pin();
+    pin_male();
+}
+
+module pin_male() {
+    if (pin == "franklin")
+        franklin_mechanism_pin();
+    else if (pin == "nosupport")
+        cubantech_pin();
+    else
+        echo("Invalid pin type", pin);
 }
 
 module cubantech_headmount() {
@@ -83,11 +94,11 @@ module cubantech_headmount() {
         // Male pin left
         translate([109.3, 33.4, 7.5])
         rotate(90, [1, 0, 0])
-        franklin_mechanism_pin();
+        pin_male();
         // Male pin right
         translate([109.3, 186, 7.5])
         rotate(-90, [1, 0, 0])
-        franklin_mechanism_pin();
+        pin_male();
     }
 }
 
@@ -96,10 +107,10 @@ module cubantech_visor() {
         visor_fuenlabrada();
         translate([162.8, 28.7 + 1.5 * pin_height, 7.5])
         rotate(90, [1, 0, 0])
-        franklin_mechanism_hole();
+        pin_hole();
         translate([162.8, 191.2 + 1.5 * pin_height, 7.5])
         rotate(90, [1, 0, 0])
-        franklin_mechanism_hole();
+        pin_hole();
     }
 }
 
@@ -109,6 +120,15 @@ module cubantech_fuenlabrada() {
     else if (part == "visor") cubantech_visor();
 }
 
+module cubantech_fuenlabrada_main() {
+    if (!(part == "headmount" || part == "visor"))
+        echo("Invalid param", "part", part);
+    else if (!(pin == "nosupport" || pin == "franklin"))
+        echo("Invalid param", "pin", pin);
+    else
+        cubantech_fuenlabrada();
+
+}
+
 cubantech_fuenlabrada();
-//franklin_mechanism_pin();
-//franklin_mechanism_pin_from_model();
+
