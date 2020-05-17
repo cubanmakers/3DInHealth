@@ -46,18 +46,24 @@ module franklin_mechanism_pin() {
     }
 }
 
+module cubantech_pin_head() {
+        hull() {
+            translate([-3.75, 0, 0])
+            cube([7.5, 3, 3], center=true);
+            translate([-2.75, 0, 3])
+            cube([5.5, 2.5, 3], center=true);
+            cylinder(h=3, r=5, center=false, $fn=100);
+            cylinder(h=4.5, r=3, center=false, $fn=100);
+        }
+}
+
 module cubantech_pin() {
     union() {
-        hull() {
-            translate([-3.75, 0, pin_height - 4.5])
-            cube([7.5, 3, 3], center=true);
-            translate([-2.75, 0, pin_height - 1.5])
-            cube([5.5, 2.5, 3], center=true);
-        }
-        hull() {
-            cylinder(h=pin_height-3, r=5, center=false, $fn=100);
-            cylinder(h=pin_height, r=3, center=false, $fn=100);
-        }
+        // Convex pin head. Does not need support material for 3D print.
+        translate([0, 0, pin_height - 4])
+        cubantech_pin_head();
+        // Cylindrical pin base
+        cylinder(h=pin_height-3, r=5, center=false, $fn=100);
     }
 }
 
@@ -131,4 +137,3 @@ module cubantech_fuenlabrada_main() {
 }
 
 cubantech_fuenlabrada_main();
-
