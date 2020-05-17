@@ -9,7 +9,7 @@ repo_path = "../../..";
 // Part to render, one of "headmount" , "visor"
 part = "headmount";
 // Spacing to use between moving parts
-spacing = 0.2;
+spacing = 0.4;
 // Head mount pin height
 pin_height = 11.5;
 // Pin rotation angle
@@ -32,7 +32,7 @@ module visor_fuenlabrada() {
     import_model("/visor/cvm_fuenlabrada/files/PORTAPANTALLA.stl");
 }
 
-module franklin_mechanism_pin() {
+module franklin_mechanism_pin_from_model() {
     resize(newsize=[0, 0, pin_height])
     rotate(-90, [1, 0, 0])  
     translate([6, 85, -10])
@@ -41,6 +41,21 @@ module franklin_mechanism_pin() {
             translate([0, -90, 0]) cube([40, 10, 40], center=true);
         }
         visor_franklin_headmount();
+    }
+}
+
+module franklin_mechanism_pin() {
+    union() {
+        hull() {
+            translate([-3.75, 0, pin_height - 4.5])
+            cube([7.5, 3, 3], center=true);
+            translate([-2.75, 0, pin_height - 1.5])
+            cube([5.5, 2.5, 3], center=true);
+        }
+        hull() {
+            cylinder(h=pin_height-3, r=5, center=false, $fn=100);
+            cylinder(h=pin_height, r=3, center=false, $fn=100);
+        }
     }
 }
 
@@ -65,18 +80,10 @@ module cubantech_headmount() {
                 cylinder(h=10, r=5, center=false);
             }
         }
-        // Repair left side after diff
-        translate([109.3, 33.5, 7.5])
-        rotate(90, [1, 0, 0])
-        cylinder(h=0.4, r=5, center=false);
         // Male pin left
         translate([109.3, 33.4, 7.5])
         rotate(90, [1, 0, 0])
         franklin_mechanism_pin();
-        // Repair right side after diff
-        translate([109.3, 186.6, 7.5])
-        rotate(90, [1, 0, 0])
-        cylinder(h=0.4, r=5.2, center=false);
         // Male pin right
         translate([109.3, 186, 7.5])
         rotate(-90, [1, 0, 0])
@@ -103,3 +110,5 @@ module cubantech_fuenlabrada() {
 }
 
 cubantech_fuenlabrada();
+//franklin_mechanism_pin();
+//franklin_mechanism_pin_from_model();
