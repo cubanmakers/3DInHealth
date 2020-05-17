@@ -130,5 +130,5 @@ module cubantech_fuenlabrada_main() {
 
 }
 
-cubantech_fuenlabrada();
+cubantech_fuenlabrada_main();
 
