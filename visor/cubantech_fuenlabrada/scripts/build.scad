@@ -48,6 +48,21 @@ module franklin_mechanism_pin() {
     }
 }
 
+module franklin_csg_pin() {
+    union() {
+        hull() {
+            translate([-3.75, 0, pin_height - 4.5])
+            cube([7.5, 3, 3], center=true);
+            translate([-2.75, 0, pin_height - 1.5])
+            cube([5.5, 2.5, 3], center=true);
+        }
+        hull() {
+            cylinder(h=pin_height-3, r=5, center=false, $fn=100);
+            cylinder(h=pin_height, r=3, center=false, $fn=100);
+        }
+    }
+}
+
 module cubantech_pin_head() {
         hull() {
             translate([-3.75, 0, 0])
@@ -82,6 +97,8 @@ module pin_male() {
         franklin_mechanism_pin();
     else if (pin == "nosupport")
         cubantech_pin();
+    else if (pin == "franklin_csg")
+        franklin_csg_pin();
     else
         echo("Invalid pin type", pin);
 }
@@ -133,7 +150,7 @@ module cubantech_fuenlabrada() {
 module cubantech_fuenlabrada_main() {
     if (!(part == "headmount" || part == "visor"))
         echo("Invalid param", "part", part);
-    else if (!(pin == "nosupport" || pin == "franklin"))
+    else if (!(pin == "nosupport" || pin == "franklin" || pin == "franklin_csg"))
         echo("Invalid param", "pin", pin);
     else
         cubantech_fuenlabrada();
