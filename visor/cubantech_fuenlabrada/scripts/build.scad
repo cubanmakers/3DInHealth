@@ -124,7 +124,7 @@ module cubantech_headmount() {
         // Male pin right
         translate([109.3, 186, 7.5])
         rotate(-90, [1, 0, 0])
-        rotate(pin_pitch, [0, 0, 1])
+        rotate(-pin_pitch, [0, 0, 1])
         pin_male();
     }
 }
