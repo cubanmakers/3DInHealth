@@ -15,7 +15,9 @@ pin = "nosupport";
 // Head mount pin height
 pin_height = 11.5;
 // Pin rotation angle
-pin_pitch = -155;
+pin_pitch = 0;
+// Hole rotation angle relative to pin
+hole_angle = -155;
 
 module import_model(subpath="") {
     echo("Loading", str(repo_path, subpath));
@@ -68,7 +70,7 @@ module cubantech_pin() {
 }
 
 module pin_hole() {
-    rotate(pin_pitch, [0, 0, 1])
+    rotate(pin_pitch + hole_angle, [0, 0, 1])
     linear_extrude(height=3 * pin_height)
     offset(delta=spacing, chamfer=true)
     projection(cut = false)
@@ -100,10 +102,12 @@ module cubantech_headmount() {
         // Male pin left
         translate([109.3, 33.4, 7.5])
         rotate(90, [1, 0, 0])
+        rotate(pin_pitch, [0, 0, 1])
         pin_male();
         // Male pin right
         translate([109.3, 186, 7.5])
         rotate(-90, [1, 0, 0])
+        rotate(pin_pitch, [0, 0, 1])
         pin_male();
     }
 }
