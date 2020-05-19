@@ -6,18 +6,18 @@
 
 // File system path to working copy of git respository
 repo_path = "../../..";
-// Part to render, one of "headmount" (default) , "visor"
+// Part to render, one of "headmount" (default) , "visor", "pin_test"
 part = "headmount";
 // Spacing to use between moving parts
 spacing = 0.4;
-// Pin geometry one of "franklin", "nosupport" (default), "franklin_csg"
-pin = "nosupport";
+// Pin geometry one of "franklin", "nosupport", "franklin_csg" (default)
+pin = "franklin_csg";
 // Head mount pin height
 pin_height = 11.5;
 // Pin rotation angle
-pin_pitch = 0;
+pin_pitch = 90;
 // Hole rotation angle relative to pin
-hole_angle = -155;
+hole_angle = -115;
 
 module import_model(subpath="") {
     echo("Loading", str(repo_path, subpath));
@@ -141,20 +141,43 @@ module cubantech_visor() {
     }
 }
 
+module pin_test() {
+    union() {
+        intersection() {
+            cubantech_headmount();
+            union() {
+                translate([109.3, 33.4, 7.5])
+                cube([30, 30, 30], center=true);
+                translate([109.3, 186, 7.5])
+                cube([30, 30, 30], center=true);
+            }
+        }
+        intersection() {
+            cubantech_visor();
+            union() {
+                translate([162.8, 28.7, 7.5])
+                cube([30, 30, 30], center=true);
+                translate([162.8, 191.2, 7.5])
+                cube([30, 30, 30], center=true);
+            }
+        }
+    }
+}
+
 module cubantech_fuenlabrada() {
     echo("Building", part);
     if (part == "headmount") cubantech_headmount();
     else if (part == "visor") cubantech_visor();
+    else if (part == "pin_test") pin_test();
 }
 
 module cubantech_fuenlabrada_main() {
-    if (!(part == "headmount" || part == "visor"))
+    if (!(part == "headmount" || part == "visor" || part == "pin_test"))
         echo("Invalid param", "part", part);
     else if (!(pin == "nosupport" || pin == "franklin" || pin == "franklin_csg"))
         echo("Invalid param", "pin", pin);
     else
         cubantech_fuenlabrada();
-
 }
 
 cubantech_fuenlabrada_main();
