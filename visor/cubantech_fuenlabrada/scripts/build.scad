@@ -10,7 +10,7 @@ repo_path = "../../..";
 part = "headmount";
 // Spacing to use between moving parts
 spacing = 0.4;
-// Pin geometry one of "franklin", "nosupport" (default)
+// Pin geometry one of "franklin", "nosupport" (default), "franklin_csg"
 pin = "nosupport";
 // Head mount pin height
 pin_height = 11.5;
@@ -158,3 +158,4 @@ module cubantech_fuenlabrada_main() {
 }
 
 cubantech_fuenlabrada_main();
+
