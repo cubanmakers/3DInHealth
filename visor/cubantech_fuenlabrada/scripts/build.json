@@ -1,0 +1,14 @@
+{
+    "parameterSets": {
+        "design default values": {
+            "hole_angle": "-295",
+            "part": "visor",
+            "pin": "franklin_csg",
+            "pin_height": "13.5",
+            "pin_pitch": "90",
+            "repo_path": "..\/..\/..",
+            "spacing": "0.6"
+        }
+    },
+    "fileFormatVersion": "1"
+}

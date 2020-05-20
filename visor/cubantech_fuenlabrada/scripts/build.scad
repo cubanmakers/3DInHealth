@@ -9,15 +9,15 @@ repo_path = "../../..";
 // Part to render, one of "headmount" (default) , "visor", "pin_test"
 part = "headmount";
 // Spacing to use between moving parts
-spacing = 0.4;
+spacing = 0.6;
 // Pin geometry one of "franklin", "nosupport", "franklin_csg" (default)
 pin = "franklin_csg";
 // Head mount pin height
-pin_height = 11.5;
+pin_height = 13.5;
 // Pin rotation angle
 pin_pitch = 90;
 // Hole rotation angle relative to pin
-hole_angle = -115;
+hole_angle = -295;
 
 module import_model(subpath="") {
     echo("Loading", str(repo_path, subpath));
