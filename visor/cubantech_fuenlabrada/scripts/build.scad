@@ -85,6 +85,9 @@ module cubantech_pin() {
 }
 
 module pin_hole() {
+    if (spacing < 0.6) {
+        echo("WARNING", "Tolerance tests revealed ", spacing, "mm is not enough for pin to fit into hole");
+    }
     rotate(pin_pitch + hole_angle, [0, 0, 1])
     linear_extrude(height=3 * pin_height)
     offset(delta=spacing, chamfer=true)
@@ -93,6 +96,9 @@ module pin_hole() {
 }
 
 module pin_male() {
+    if (pin_height < 13.5) {
+        echo("WARNING", "Pin height of ". pin_height, " mm might not fit in visor hole");
+    }
     if (pin == "franklin")
         franklin_mechanism_pin();
     else if (pin == "nosupport")
