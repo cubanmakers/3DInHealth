@@ -18,6 +18,15 @@ pin_height = 13.5;
 pin_pitch = 90;
 // Hole rotation angle relative to pin
 hole_angle = -295;
+// Insert holes to tighten visor atop the head near coronal suture
+hole_headup = false;
+
+// Internal constant values
+function headup_pin_spacing() = 20;
+function headup_hole_spacing() = 7;
+function headup_hole_length() = 12;
+function headup_hole_radius() = 1.5;
+function headup_dim() = [50, 3, 15];
 
 module import_model(subpath="") {
     echo("Loading", str(repo_path, subpath));
@@ -34,6 +43,15 @@ module visor_fuenlabrada_headmount() {
 
 module visor_fuenlabrada() {
     import_model("/visor/cvm_fuenlabrada/files/PORTAPANTALLA.stl");
+}
+
+module part_headup_sandra() {
+    import_model("/visor/cubantech_sandra/files/pieza_agarre_cabeza.stl");
+}
+
+module cubantech_headup() {
+    resize(headup_dim())
+    part_headup_sandra();
 }
 
 module franklin_mechanism_pin() {
@@ -95,6 +113,19 @@ module pin_hole() {
     pin_male();
 }
 
+module headmount_hole() {
+    circle_x = (headup_hole_length() - 2 * headup_hole_radius()) / 2;
+    linear_extrude(height=3 * pin_height)
+    union() {
+        translate([circle_x, 0, 0], $fn=40)
+        circle(r=headup_hole_radius());
+        translate([-circle_x, 0, 0], $fn=40)
+        circle(r=headup_hole_radius());
+        square([2 * circle_x, 2 * headup_hole_radius()], center=true);
+    }
+}
+
+
 module pin_male() {
     if (pin_height < 13.5) {
         echo("WARNING", "Pin height of ". pin_height, " mm might not fit in visor hole");
@@ -109,10 +140,36 @@ module pin_male() {
         echo("Invalid pin type", pin);
 }
 
+module custom_headmount() {
+  if (hole_headup) {
+      difference() {
+          visor_fuenlabrada_headmount();
+          translate([109.3 + headup_pin_spacing(), 33.4 + 1.5 * pin_height, 7.5])
+          rotate([90, [1, 0, 0]])
+          rotate(30, [0, 0, 1])
+          headmount_hole();
+          translate([109.3 + headup_pin_spacing(), 186 - 1.5 * pin_height, 7.5])
+          rotate([-90, [1, 0, 0]])
+          rotate(-30, [0, 0, 1])
+          headmount_hole();
+          translate([109.3 + headup_pin_spacing() + headup_hole_spacing(), 33.4 + 1.5 * pin_height, 7.5])
+          rotate([90, [1, 0, 0]])
+          rotate(30, [0, 0, 1])
+          headmount_hole();
+          translate([109.3 + headup_pin_spacing() + headup_hole_spacing(), 186 - 1.5 * pin_height, 7.5])
+          rotate([-90, [1, 0, 0]])
+          rotate(-30, [0, 0, 1])
+          headmount_hole();
+      }
+  } else {
+      visor_fuenlabrada_headmount();
+  }
+}
+
 module cubantech_headmount() {
     union() {
         difference() {
-            visor_fuenlabrada_headmount();
+            custom_headmount();
             union() {
                 translate([109.3, 33.4, 7.5])
                 rotate(90, [1, 0, 0])
