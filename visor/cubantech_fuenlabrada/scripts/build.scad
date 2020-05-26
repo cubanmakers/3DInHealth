@@ -20,9 +20,11 @@ pin_pitch = 90;
 hole_angle = -295;
 // Insert holes to tighten visor atop the head near coronal suture
 hole_headup = false;
+// Shorten headmount sides , like popular Hancoh visor
+small = false;
 
 // Internal constant values
-function headup_pin_spacing() = 20;
+function headup_pin_spacing() = 23;
 function headup_hole_spacing() = 7;
 function headup_hole_length() = 12;
 function headup_hole_radius() = 1.5;
@@ -140,10 +142,78 @@ module pin_male() {
         echo("Invalid pin type", pin);
 }
 
+function pos_small_tip_left() = [109.3 + headup_pin_spacing() - 0.5 * headup_hole_length(), 33.4, 0];
+function pos_small_tip_right() = [109.3 + headup_pin_spacing() - 0.5 * headup_hole_length(), 186, 0];
+
+module headmount_small_tip_left() {
+    translate(-pos_small_tip_left())
+    intersection() {
+        translate(pos_small_tip_left() - [3, 0, 0])
+        cube([23, 5, 15]);
+        visor_fuenlabrada_headmount();
+    }
+}
+
+module headmount_small_patch_left() {
+    hull() {
+        headmount_small_tip_left();
+        translate([2,-1.2,0])
+        resize([headup_pin_spacing() - 2,0,0])
+        headmount_small_tip_left();
+        translate([20,2.59, 7.5])
+        rotate(2.5, [0,0,1])
+        rotate(90, [1,0,0])
+        cylinder(h=2.33, r=7.5, center=true, $fn=100);
+    }
+}
+
+module headmount_small_tip_right() {
+    translate(-pos_small_tip_right())
+    intersection() {
+        visor_fuenlabrada_headmount();
+        translate(pos_small_tip_right() - [3, 3, 0])
+        cube([23, 5, 15]);
+    }
+}
+
+module headmount_small_patch_right() {
+    hull() {
+        headmount_small_tip_right();
+        translate([2,1.2,0])
+        resize([headup_pin_spacing() - 2,0,0])
+        headmount_small_tip_right();
+        translate([20, -1.0, 7.5])
+        rotate(-2.5, [0,0,1])
+        rotate(90, [1,0,0])
+        cylinder(h=2.33, r=7.5, center=true, $fn=100);
+    }
+}
+
+module headmount_for_size() {
+    if (small) {
+        union() {
+            difference() {
+                visor_fuenlabrada_headmount();
+                translate([109.3 + headup_pin_spacing() + 2 * headup_hole_spacing(), 33.4, 0])
+                cube([70, 25, 15], centered=true);
+                translate([109.3 + headup_pin_spacing() + 2 * headup_hole_spacing(), 186 - 25, 0])
+                cube([70, 25, 15], centered=true);
+            }
+            translate(pos_small_tip_left())
+            headmount_small_patch_left();
+            translate(pos_small_tip_right())
+            headmount_small_patch_right();
+        }
+    }
+    else {
+        visor_fuenlabrada_headmount();
+    }
+}
+
 module custom_headmount() {
-  if (hole_headup) {
+  if (hole_headup || small) {
       difference() {
-          visor_fuenlabrada_headmount();
+          headmount_for_size();
           translate([109.3 + headup_pin_spacing(), 33.4 + 1.5 * pin_height, 7.5])
           rotate([90, [1, 0, 0]])
           rotate(30, [0, 0, 1])
@@ -162,7 +232,7 @@ module custom_headmount() {
           headmount_hole();
       }
   } else {
-      visor_fuenlabrada_headmount();
+    headmount_for_size();
   }
 }
 
@@ -244,4 +314,3 @@ module cubantech_fuenlabrada_main() {
 }
 
 cubantech_fuenlabrada_main();
-
