@@ -4,6 +4,10 @@
 // - parts borrowed from INSST-certified model , see https://github.com/cubanmakers/3DInHealth/tree/master/visor/cvm_fuenlabrada
 // - modified to use the pin assembly mechanism crafted for Franklin's visor https://github.com/cubanmakers/3DInHealth/tree/master/visor/cubantech_franklin
 
+//--------------------
+// Model parameters
+//--------------------
+
 // File system path to working copy of git respository
 repo_path = "../../..";
 // Part to render, one of "headmount" (default) , "visor", "pin_test"
@@ -22,13 +26,34 @@ hole_angle = -295;
 hole_headup = false;
 // Shorten headmount sides , like popular Hancoh visor
 small = false;
+// Geomerty detail quality factor
+fn = 100;
 
-// Internal constant values
+
+// Internal constant values for Frankin's visor geometry
+function franklin_pin_dim() = [14, 12, pin_height];
+function franklin_pin_pos() = [6, 85, -10];
+
+// Internal constant values for INSST-certified visor geometry
+function cvm_visor_height() = 15;
+function cvm_headmount_thickness() = 1.2;
+function cvm_pos_pin_left() = [109.3, 33.4, cvm_visor_height() / 2];
+function cvm_pos_pin_right() = [109.3, 186, cvm_visor_height() / 2];
+function cvm_pos_hole_left() = [162.8, 28.7, cvm_visor_height() / 2];
+function cvm_pos_hole_right() = [162.8, 191.2, cvm_visor_height() / 2];
+
+// Internal constant values for holes to tighten visor atop the head
 function headup_pin_spacing() = 23;
 function headup_hole_spacing() = 7;
 function headup_hole_length() = 12;
 function headup_hole_radius() = 1.5;
 function headup_dim() = [50, 3, 15];
+
+// Internal constants for building small visor
+function pos_small_tip_left() = cvm_pos_pin_left() + [headup_pin_spacing() - 0.5 * headup_hole_length(), 0, -cvm_visor_height() / 2];
+function pos_small_tip_right() = cvm_pos_pin_right() + [headup_pin_spacing() - 0.5 * headup_hole_length(), 0, -cvm_visor_height() / 2];
+function small_tip_length() = 23;
+function small_tip_align_angle() = 2.5;
 
 module import_model(subpath="") {
     echo("Loading", str(repo_path, subpath));
@@ -57,13 +82,12 @@ module cubantech_headup() {
 }
 
 module franklin_mechanism_pin() {
-    resize(newsize=[14, 12, pin_height])
+    resize(newsize=franklin_pin_dim())
     rotate(-90, [1, 0, 0])  
-    translate([6, 85, -10])
+    translate(franklin_pin_pos())
     intersection() {
-        union() {
-            translate([0, -90, 0]) cube([40, 10, 40], center=true);
-        }
+        translate([0, -90, 0])
+        cube([40, 10, 40], center=true);
         visor_franklin_headmount();
     }
 }
@@ -77,8 +101,8 @@ module franklin_csg_pin() {
             cube([5.5, 2.5, 3], center=true);
         }
         hull() {
-            cylinder(h=pin_height-3, r=5, center=false, $fn=100);
-            cylinder(h=pin_height, r=3, center=false, $fn=100);
+            cylinder(h=pin_height-3, r=5, center=false, $fn=fn);
+            cylinder(h=pin_height, r=3, center=false, $fn=fn);
         }
     }
 }
@@ -89,8 +113,8 @@ module cubantech_pin_head() {
             cube([7.5, 3, 3], center=true);
             translate([-2.75, 0, 3])
             cube([5.5, 2.5, 3], center=true);
-            cylinder(h=3, r=5, center=false, $fn=100);
-            cylinder(h=4.5, r=3, center=false, $fn=100);
+            cylinder(h=3, r=5, center=false, $fn=fn);
+            cylinder(h=4.5, r=3, center=false, $fn=fn);
         }
 }
 
@@ -100,7 +124,7 @@ module cubantech_pin() {
         translate([0, 0, pin_height - 4])
         cubantech_pin_head();
         // Cylindrical pin base
-        cylinder(h=pin_height-3, r=5, center=false, $fn=100);
+        cylinder(h=pin_height-3, r=5, center=false, $fn=fn);
     }
 }
 
@@ -142,14 +166,11 @@ module pin_male() {
         echo("Invalid pin type", pin);
 }
 
-function pos_small_tip_left() = [109.3 + headup_pin_spacing() - 0.5 * headup_hole_length(), 33.4, 0];
-function pos_small_tip_right() = [109.3 + headup_pin_spacing() - 0.5 * headup_hole_length(), 186, 0];
-
 module headmount_small_tip_left() {
     translate(-pos_small_tip_left())
     intersection() {
         translate(pos_small_tip_left() - [3, 0, 0])
-        cube([23, 5, 15]);
+        cube([small_tip_length(), 2 * cvm_headmount_thickness() + 3, cvm_visor_height()]);
         visor_fuenlabrada_headmount();
     }
 }
@@ -157,13 +178,14 @@ module headmount_small_tip_left() {
 module headmount_small_patch_left() {
     hull() {
         headmount_small_tip_left();
-        translate([2,-1.2,0])
+        translate([2,-cvm_headmount_thickness(),0])
         resize([headup_pin_spacing() - 2,0,0])
         headmount_small_tip_left();
-        translate([20,2.59, 7.5])
-        rotate(2.5, [0,0,1])
+        // TODO: small_tip_length() ?
+        translate([small_tip_length() - 3, 2.59, cvm_visor_height() / 2])
+        rotate(small_tip_align_angle(), [0,0,1])
         rotate(90, [1,0,0])
-        cylinder(h=2.33, r=7.5, center=true, $fn=100);
+        cylinder(h=2.33, r=cvm_visor_height() / 2, center=true, $fn=fn);
     }
 }
 
@@ -172,20 +194,21 @@ module headmount_small_tip_right() {
     intersection() {
         visor_fuenlabrada_headmount();
         translate(pos_small_tip_right() - [3, 3, 0])
-        cube([23, 5, 15]);
+        cube([small_tip_length(), 2 * cvm_headmount_thickness() + 3, cvm_visor_height()]);
     }
 }
 
 module headmount_small_patch_right() {
     hull() {
         headmount_small_tip_right();
-        translate([2,1.2,0])
+        translate([2,cvm_headmount_thickness(),0])
         resize([headup_pin_spacing() - 2,0,0])
         headmount_small_tip_right();
-        translate([20, -1.0, 7.5])
-        rotate(-2.5, [0,0,1])
+        // TODO: small_tip_length() ?
+        translate([small_tip_length() - 3, -1.0, cvm_visor_height() / 2])
+        rotate(-small_tip_align_angle(), [0,0,1])
         rotate(90, [1,0,0])
-        cylinder(h=2.33, r=7.5, center=true, $fn=100);
+        cylinder(h=2.33, r=cvm_visor_height() / 2, center=true, $fn=fn);
     }
 }
 
@@ -214,19 +237,19 @@ module custom_headmount() {
   if (hole_headup || small) {
       difference() {
           headmount_for_size();
-          translate([109.3 + headup_pin_spacing(), 33.4 + 1.5 * pin_height, 7.5])
+          translate(cvm_pos_pin_left() + [headup_pin_spacing(), 1.5 * pin_height, 0])
           rotate([90, [1, 0, 0]])
           rotate(30, [0, 0, 1])
           headmount_hole();
-          translate([109.3 + headup_pin_spacing(), 186 - 1.5 * pin_height, 7.5])
+          translate(cvm_pos_pin_right() + [headup_pin_spacing(), - 1.5 * pin_height, 0])
           rotate([-90, [1, 0, 0]])
           rotate(-30, [0, 0, 1])
           headmount_hole();
-          translate([109.3 + headup_pin_spacing() + headup_hole_spacing(), 33.4 + 1.5 * pin_height, 7.5])
+          translate(cvm_pos_pin_left() + [headup_pin_spacing() + headup_hole_spacing(), 1.5 * pin_height, 0])
           rotate([90, [1, 0, 0]])
           rotate(30, [0, 0, 1])
           headmount_hole();
-          translate([109.3 + headup_pin_spacing() + headup_hole_spacing(), 186 - 1.5 * pin_height, 7.5])
+          translate(cvm_pos_pin_right() + [headup_pin_spacing() + headup_hole_spacing(), -1.5 * pin_height, 0])
           rotate([-90, [1, 0, 0]])
           rotate(-30, [0, 0, 1])
           headmount_hole();
@@ -241,21 +264,21 @@ module cubantech_headmount() {
         difference() {
             custom_headmount();
             union() {
-                translate([109.3, 33.4, 7.5])
+                translate(cvm_pos_pin_left())
                 rotate(90, [1, 0, 0])
                 cylinder(h=10, r=5, center=false);
-                translate([109.3, 196.6, 7.5])
+                translate(cvm_pos_pin_right() + [0, 16.6, 0])
                 rotate(90, [1, 0, 0])
                 cylinder(h=10, r=5, center=false);
             }
         }
         // Male pin left
-        translate([109.3, 33.4, 7.5])
+        translate(cvm_pos_pin_left())
         rotate(90, [1, 0, 0])
         rotate(pin_pitch, [0, 0, 1])
         pin_male();
         // Male pin right
-        translate([109.3, 186, 7.5])
+        translate(cvm_pos_pin_right())
         rotate(-90, [1, 0, 0])
         rotate(-pin_pitch, [0, 0, 1])
         pin_male();
@@ -263,12 +286,13 @@ module cubantech_headmount() {
 }
 
 module cubantech_visor() {
+    hole_offset = [0, 1.5 * pin_height, 0];
     difference() {
         visor_fuenlabrada();
-        translate([162.8, 28.7 + 1.5 * pin_height, 7.5])
+        translate(cvm_pos_hole_left() + hole_offset)
         rotate(90, [1, 0, 0])
         pin_hole();
-        translate([162.8, 191.2 + 1.5 * pin_height, 7.5])
+        translate(cvm_pos_hole_right() + hole_offset)
         rotate(90, [1, 0, 0])
         pin_hole();
     }
@@ -279,18 +303,18 @@ module pin_test() {
         intersection() {
             cubantech_headmount();
             union() {
-                translate([109.3, 33.4, 7.5])
+                translate(cvm_pos_pin_left())
                 cube([30, 30, 30], center=true);
-                translate([109.3, 186, 7.5])
+                translate(cvm_pos_pin_right())
                 cube([30, 30, 30], center=true);
             }
         }
         intersection() {
             cubantech_visor();
             union() {
-                translate([162.8, 28.7, 7.5])
+                translate(cvm_pos_hole_left())
                 cube([30, 30, 30], center=true);
-                translate([162.8, 191.2, 7.5])
+                translate(cvm_pos_hole_right())
                 cube([30, 30, 30], center=true);
             }
         }
@@ -302,6 +326,7 @@ module cubantech_fuenlabrada() {
     if (part == "headmount") cubantech_headmount();
     else if (part == "visor") cubantech_visor();
     else if (part == "pin_test") pin_test();
+    else if (part == "assembled") cubantech_visor_assembled();
 }
 
 module cubantech_fuenlabrada_main() {
