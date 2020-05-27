@@ -3,6 +3,14 @@
 
 cubantech_fuenlabrada: cubantech_fuenlabrada_headmount cubantech_fuenlabrada_visor ## INSST-certified visor with Franklin mechanism
 
+visor/cubantech_fuenlabrada/files/corta.ensamblada.stl: visor/cubantech_fuenlabrada/scripts/build.scad
+	openscad -D 'part="assembled"' -D'small=true' -o visor/cubantech_fuenlabrada/files/corta.ensamblada.stl visor/cubantech_fuenlabrada/scripts/build.scad
+	admesh -b visor/cubantech_fuenlabrada/files/corta.ensamblada.stl visor/cubantech_fuenlabrada/files/corta.ensamblada.stl
+
+visor/cubantech_fuenlabrada/files/DIADEMA.corta.stl: visor/cubantech_fuenlabrada/scripts/build.scad
+	openscad -D 'part="headmount"' -D'small=true' -o visor/cubantech_fuenlabrada/files/DIADEMA.corta.stl visor/cubantech_fuenlabrada/scripts/build.scad
+	admesh -b visor/cubantech_fuenlabrada/files/DIADEMA.corta.stl visor/cubantech_fuenlabrada/files/DIADEMA.corta.stl
+
 visor/cubantech_fuenlabrada/files/DIADEMA.stl: visor/cubantech_fuenlabrada/scripts/build.scad
 	openscad -D 'part="headmount"' -o visor/cubantech_fuenlabrada/files/DIADEMA.stl visor/cubantech_fuenlabrada/scripts/build.scad
 	admesh -b visor/cubantech_fuenlabrada/files/DIADEMA.stl visor/cubantech_fuenlabrada/files/DIADEMA.stl
@@ -10,6 +18,8 @@ visor/cubantech_fuenlabrada/files/DIADEMA.stl: visor/cubantech_fuenlabrada/scrip
 visor/cubantech_fuenlabrada/files/PORTAPANTALLA.stl: visor/cubantech_fuenlabrada/scripts/build.scad
 	openscad -D 'part="visor"' -o visor/cubantech_fuenlabrada/files/PORTAPANTALLA.stl visor/cubantech_fuenlabrada/scripts/build.scad
 	admesh -b visor/cubantech_fuenlabrada/files/PORTAPANTALLA.stl visor/cubantech_fuenlabrada/files/PORTAPANTALLA.stl
+
+cubantech_fuenlabrada_small: visor/cubantech_fuenlabrada/files/DIADEMA.corta.stl visor/cubantech_fuenlabrada/files/corta.ensamblada.stl ## Small version of INSST-certified visor with Franklin mechanism
 
 cubantech_fuenlabrada_headmount: visor/cubantech_fuenlabrada/files/DIADEMA.stl ## Head support part of INSST-certified visor with Franklin mechanism
 
