@@ -10,7 +10,7 @@
 
 // File system path to working copy of git respository
 repo_path = "../../..";
-// Part to render, one of "headmount" (default) , "visor", "pin_test"
+// Part to render, one of "headmount" (default) , "visor", "pin_test", "assembled"
 part = "headmount";
 // Spacing to use between moving parts
 spacing = 0.6;
@@ -321,6 +321,14 @@ module pin_test() {
     }
 }
 
+module cubantech_visor_assembled() {
+    color("red")
+    translate([cvm_pos_hole_left()[0] - cvm_pos_pin_left()[0], 0, 0])
+    cubantech_headmount();
+    color("blue")
+    cubantech_visor();
+}
+
 module cubantech_fuenlabrada() {
     echo("Building", part);
     if (part == "headmount") cubantech_headmount();
@@ -330,7 +338,7 @@ module cubantech_fuenlabrada() {
 }
 
 module cubantech_fuenlabrada_main() {
-    if (!(part == "headmount" || part == "visor" || part == "pin_test"))
+    if (!(part == "headmount" || part == "visor" || part == "pin_test" || part == "assembled"))
         echo("Invalid param", "part", part);
     else if (!(pin == "nosupport" || pin == "franklin" || pin == "franklin_csg"))
         echo("Invalid param", "pin", pin);
